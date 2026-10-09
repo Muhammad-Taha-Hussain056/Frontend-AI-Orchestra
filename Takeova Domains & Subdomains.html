@@ -1,0 +1,845 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Takeova Domains &amp; Subdomains</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap">
+<style>
+/* Layout: reference manual. Sticky contents rail on wide screens, one reading column, zone-file styled record blocks. */
+:root {
+  --bg: #f6f8f8;
+  --surface: #ffffff;
+  --sunken: #eaefef;
+  --fg: #182326;
+  --muted: #56676b;
+  --rule: #d3dcdd;
+  --accent: #0b6b70;
+  --accent-soft: #dcefef;
+  --ok: #1d7a43; --ok-soft: #e1f3e7;
+  --warn: #9a5b00; --warn-soft: #fbefd9;
+  --bad: #b4232c; --bad-soft: #fbe3e4;
+  --info: #3355a8; --info-soft: #e4eafa;
+  --code-bg: #10292c;
+  --code-fg: #d8eceb;
+  --code-dim: #7fa3a5;
+  --code-key: #8fd6c9;
+  --f-display: "IBM Plex Sans Condensed", "Arial Narrow", system-ui, sans-serif;
+  --f-body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0f1719; --surface: #152022; --sunken: #1b2a2d; --fg: #e3ecec; --muted: #9bb0b2; --rule: #2a3b3e;
+    --accent: #5cc6c2; --accent-soft: #173537;
+    --ok: #6fd296; --ok-soft: #173325; --warn: #f0b75a; --warn-soft: #3a2c12; --bad: #ff8a8f; --bad-soft: #3d1c1f;
+    --info: #9cb4ff; --info-soft: #1d2747;
+    --code-bg: #0a1214; --code-fg: #d8eceb; --code-dim: #6d8c8e; --code-key: #7fd3c5;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0f1719; --surface: #152022; --sunken: #1b2a2d; --fg: #e3ecec; --muted: #9bb0b2; --rule: #2a3b3e;
+  --accent: #5cc6c2; --accent-soft: #173537;
+  --ok: #6fd296; --ok-soft: #173325; --warn: #f0b75a; --warn-soft: #3a2c12; --bad: #ff8a8f; --bad-soft: #3d1c1f;
+  --info: #9cb4ff; --info-soft: #1d2747;
+  --code-bg: #0a1214; --code-fg: #d8eceb; --code-dim: #6d8c8e; --code-key: #7fd3c5;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body {
+  background: var(--bg); color: var(--fg);
+  font-family: var(--f-body); font-size: 16px; line-height: 1.6;
+  padding-inline: 16px; padding-block: 0 64px;
+}
+.shell { max-width: 1180px; margin: 0 auto; display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 48px; }
+@media (max-width: 900px) { .shell { grid-template-columns: minmax(0, 1fr); gap: 0; } nav.toc { display: none; } }
+
+nav.toc { position: sticky; top: env(safe-area-inset-top, 0px); align-self: start; padding-block: 40px 24px; max-height: 100vh; overflow-y: auto; }
+nav.toc .label { font-family: var(--f-display); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
+nav.toc ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; counter-reset: toc; }
+nav.toc li { counter-increment: toc; }
+nav.toc a { display: grid; grid-template-columns: 22px 1fr; gap: 4px; padding: 5px 8px; border-radius: 4px; color: var(--muted); text-decoration: none; font-size: 14px; line-height: 1.35; }
+nav.toc a::before { content: counter(toc); font-family: var(--f-mono); font-size: 12px; color: var(--accent); padding-top: 1px; }
+nav.toc a:hover, nav.toc a:focus-visible { background: var(--sunken); color: var(--fg); outline: none; }
+
+main { min-width: 0; padding-block: 40px 0; }
+header.doc { border-bottom: 1px solid var(--rule); padding-bottom: 28px; margin-bottom: 8px; }
+.eyebrow { font-family: var(--f-display); font-size: 13px; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); font-weight: 600; }
+h1 { font-family: var(--f-display); font-weight: 700; font-size: clamp(32px, 5vw, 46px); line-height: 1.08; margin: 8px 0 14px; text-wrap: balance; letter-spacing: -.01em; }
+.lede { font-size: 18px; color: var(--muted); max-width: 68ch; margin: 0; }
+.meta { display: flex; flex-wrap: wrap; gap: 8px 20px; margin-top: 18px; font-size: 13px; color: var(--muted); }
+.meta b { color: var(--fg); font-weight: 500; }
+
+section { padding-top: 44px; scroll-margin-top: 12px; }
+h2 { font-family: var(--f-display); font-weight: 600; font-size: 28px; line-height: 1.2; margin: 0 0 6px; text-wrap: balance; display: flex; gap: 12px; align-items: baseline; }
+h2 .n { font-family: var(--f-mono); font-size: 15px; color: var(--accent); font-weight: 500; }
+h3 { font-family: var(--f-display); font-weight: 600; font-size: 20px; margin: 30px 0 8px; text-wrap: balance; }
+h4 { font-family: var(--f-display); font-weight: 600; font-size: 16px; margin: 20px 0 6px; }
+p, li { max-width: 72ch; }
+p { margin: 0 0 12px; }
+.sub { color: var(--muted); margin-bottom: 18px; }
+ul, ol { padding-left: 22px; margin: 0 0 14px; }
+li { margin-bottom: 5px; }
+a { color: var(--accent); }
+code, .mono { font-family: var(--f-mono); font-size: .86em; }
+:not(pre) > code { background: var(--sunken); padding: 1px 5px; border-radius: 3px; overflow-wrap: anywhere; }
+strong { font-weight: 600; }
+
+/* At-a-glance facts */
+.facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 1px; background: var(--rule); border: 1px solid var(--rule); border-radius: 6px; overflow: hidden; margin-top: 18px; }
+.fact { background: var(--surface); padding: 16px 18px; display: grid; gap: 4px; align-content: start; min-width: 0; }
+.fact .k { font-family: var(--f-display); font-size: 12px; letter-spacing: .07em; text-transform: uppercase; color: var(--muted); }
+.fact .v { font-family: var(--f-mono); font-size: 15px; font-weight: 500; overflow-wrap: anywhere; }
+.fact .d { font-size: 13.5px; color: var(--muted); line-height: 1.45; }
+
+/* Zone-file record block */
+.zone { background: var(--code-bg); color: var(--code-fg); border-radius: 6px; padding: 16px 18px; font-family: var(--f-mono); font-size: 13.5px; line-height: 1.7; overflow-x: auto; margin: 14px 0 18px; }
+.zone .c { color: var(--code-dim); }
+.zone .k { color: var(--code-key); }
+pre.code { background: var(--code-bg); color: var(--code-fg); border-radius: 6px; padding: 14px 16px; font-family: var(--f-mono); font-size: 13px; line-height: 1.6; overflow-x: auto; margin: 12px 0 18px; }
+pre.code .c { color: var(--code-dim); }
+
+/* Request path */
+.path { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; margin: 20px 0 10px; }
+@media (max-width: 760px) { .path { grid-template-columns: minmax(0, 1fr); } }
+.hop { background: var(--surface); border: 1px solid var(--rule); border-radius: 6px; padding: 12px 14px; position: relative; min-width: 0; }
+.hop .step { font-family: var(--f-mono); font-size: 11.5px; color: var(--accent); }
+.hop .name { font-family: var(--f-display); font-weight: 600; font-size: 16px; line-height: 1.25; margin: 2px 0 6px; }
+.hop .what { font-size: 13px; color: var(--muted); line-height: 1.45; }
+.hop:not(:last-child)::after { content: "→"; position: absolute; right: -10px; top: 50%; transform: translate(50%, -50%); color: var(--accent); font-size: 16px; background: var(--bg); line-height: 1; padding: 2px 0; }
+@media (max-width: 760px) { .hop:not(:last-child)::after { content: "↓"; right: 50%; top: auto; bottom: -10px; transform: translate(50%, 50%); padding: 0 4px; } }
+
+/* Tables */
+.tbl { overflow-x: auto; margin: 12px 0 20px; border: 1px solid var(--rule); border-radius: 6px; background: var(--surface); }
+table { border-collapse: collapse; width: 100%; font-size: 14px; }
+th, td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--rule); vertical-align: top; }
+th { font-family: var(--f-display); font-weight: 600; font-size: 12.5px; letter-spacing: .05em; text-transform: uppercase; color: var(--muted); background: var(--sunken); white-space: nowrap; }
+tr:last-child td { border-bottom: 0; }
+td code { white-space: nowrap; }
+td.wrap code { white-space: normal; }
+.num { font-variant-numeric: tabular-nums; font-family: var(--f-mono); }
+
+/* Pills */
+.pill { display: inline-block; font-family: var(--f-mono); font-size: 11.5px; font-weight: 500; padding: 1px 8px; border-radius: 999px; white-space: nowrap; border: 1px solid transparent; }
+.p-ok { background: var(--ok-soft); color: var(--ok); }
+.p-warn { background: var(--warn-soft); color: var(--warn); }
+.p-bad { background: var(--bad-soft); color: var(--bad); }
+.p-info { background: var(--info-soft); color: var(--info); }
+.p-mute { background: var(--sunken); color: var(--muted); }
+
+/* Callouts */
+.note { border: 1px solid var(--rule); border-left-width: 4px; border-radius: 4px; padding: 12px 16px; margin: 14px 0 18px; background: var(--surface); }
+.note p:last-child, .note ul:last-child { margin-bottom: 0; }
+.note .t { font-family: var(--f-display); font-weight: 600; font-size: 14px; letter-spacing: .03em; margin-bottom: 4px; }
+.note.warn { border-left-color: var(--warn); }
+.note.warn .t { color: var(--warn); }
+.note.bad { border-left-color: var(--bad); }
+.note.bad .t { color: var(--bad); }
+.note.info { border-left-color: var(--accent); }
+.note.info .t { color: var(--accent); }
+
+/* Steps */
+ol.steps { list-style: none; padding: 0; counter-reset: s; display: grid; gap: 10px; }
+ol.steps > li { counter-increment: s; display: grid; grid-template-columns: 30px minmax(0, 1fr); gap: 10px; max-width: none; margin: 0; }
+ol.steps > li::before { content: counter(s); font-family: var(--f-mono); font-size: 13px; width: 26px; height: 26px; border-radius: 50%; background: var(--accent-soft); color: var(--accent); display: grid; place-items: center; font-weight: 500; }
+ol.steps > li > div { min-width: 0; padding-top: 2px; }
+
+/* Two column compare */
+.cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px; margin: 14px 0 18px; }
+.card { background: var(--surface); border: 1px solid var(--rule); border-radius: 6px; padding: 14px 16px; min-width: 0; }
+.card h4 { margin-top: 0; }
+.card p, .card li { font-size: 14.5px; }
+.card ul { margin-bottom: 0; }
+
+/* Gap register */
+.gaps { display: grid; gap: 10px; margin: 14px 0; }
+.gap { display: grid; grid-template-columns: 92px minmax(0, 1fr); gap: 14px; background: var(--surface); border: 1px solid var(--rule); border-radius: 6px; padding: 12px 16px; }
+@media (max-width: 560px) { .gap { grid-template-columns: minmax(0, 1fr); gap: 6px; } }
+.gap .sev { align-self: start; }
+.gap h4 { margin: 0 0 4px; font-size: 15.5px; }
+.gap p { font-size: 14.5px; margin-bottom: 4px; }
+.gap .src { font-family: var(--f-mono); font-size: 12px; color: var(--muted); overflow-wrap: anywhere; }
+
+.mermaid-wrap { background: var(--surface); border: 1px solid var(--rule); border-radius: 6px; padding: 16px; overflow-x: auto; margin: 14px 0 18px; }
+pre.mermaid { margin: 0; background: transparent; font-family: var(--f-body); }
+
+footer.doc { margin-top: 56px; padding-top: 18px; border-top: 1px solid var(--rule); font-size: 13px; color: var(--muted); }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+</style>
+
+<div class="shell">
+<nav class="toc" aria-label="Contents">
+  <div class="label">Contents</div>
+  <ol>
+    <li><a href="#glance">At a glance</a></li>
+    <li><a href="#path">How a request finds a site</a></li>
+    <li><a href="#subdomains">Subdomains</a></li>
+    <li><a href="#custom">Custom domains</a></li>
+    <li><a href="#routing">Routing inside the gateway</a></li>
+    <li><a href="#canonical">The canonical public host</a></li>
+    <li><a href="#data">Data model</a></li>
+    <li><a href="#api">API surface</a></li>
+    <li><a href="#ui">What users see</a></li>
+    <li><a href="#infra">Infrastructure &amp; config</a></li>
+    <li><a href="#security">CORS, CSP &amp; trust</a></li>
+    <li><a href="#caps">Plan caps</a></li>
+    <li><a href="#gaps">Known gaps</a></li>
+    <li><a href="#tests">Test coverage</a></li>
+  </ol>
+</nav>
+
+<main>
+<header class="doc">
+  <div class="eyebrow">Takeova platform · Engineering reference</div>
+  <h1>Custom Domains &amp; Subdomains</h1>
+  <p class="lede">How a Takeova site gets its address, how a merchant connects a domain they already own, and how a request on either host reaches the right site. It covers the backend, the infrastructure and the three frontend surfaces, and lists what is not built yet.</p>
+  <div class="meta">
+    <span>Read from <b>takeova-backend</b> and <b>takeova-frontend</b> source</span>
+    <span>As of <b>9 Oct 2026</b></span>
+    <span>Environment: <b>staging only</b> (<code>staging.takeova.ai</code>)</span>
+  </div>
+</header>
+
+<!-- 1 -->
+<section id="glance">
+  <h2><span class="n">01</span>At a glance</h2>
+  <p class="sub">Every site has exactly one platform subdomain. It can also have one custom domain. Cloudflare for SaaS handles certificates for custom domains, and one middleware in the api-gateway routes both kinds of host.</p>
+  <div class="facts">
+    <div class="fact"><span class="k">Platform address</span><span class="v">&lt;label&gt;.staging.takeova.ai</span><span class="d">One per site, globally unique, assigned at onboarding. Staging is the only environment today.</span></div>
+    <div class="fact"><span class="k">Custom domain</span><span class="v">1 per site</span><span class="d">A single nullable column. It is globally unique, and there is no www/apex pairing.</span></div>
+    <div class="fact"><span class="k">DNS the merchant adds</span><span class="v">CNAME → customers.takeova.ai</span><span class="d">This is the only record. There is no TXT ownership record and no A record.</span></div>
+    <div class="fact"><span class="k">TLS for custom domains</span><span class="v">Cloudflare for SaaS</span><span class="d">Custom Hostnames API, DV certificate, HTTP validation.</span></div>
+    <div class="fact"><span class="k">Verification</span><span class="v">Cron every 2 min</span><span class="d">tenant-service polls Cloudflare. A domain is FAILED after a terminal SSL state or after 14 days.</span></div>
+    <div class="fact"><span class="k">Who serves the site</span><span class="v">api-gateway</span><span class="d"><code>SiteHostMiddleware</code> reads the Host header. No Next.js app does host routing.</span></div>
+    <div class="fact"><span class="k">Host lookup cache</span><span class="v">Redis · 30 s</span><span class="d">Keyed by host and path. Misses are cached too.</span></div>
+    <div class="fact"><span class="k">Plan cap</span><span class="v">0 / 1 / 5 / 25 / ∞</span><span class="d">Seeded per plan. <strong>The server does not enforce it.</strong> Only the editor UI does.</span></div>
+  </div>
+</section>
+
+<!-- 2 -->
+<section id="path">
+  <h2><span class="n">02</span>How a request finds a site</h2>
+  <p class="sub">Subdomain and custom-domain traffic follow the same path. They differ at the edge, where the TLS certificate comes from, and in which lookup the gateway runs.</p>
+
+  <div class="path" role="list">
+    <div class="hop" role="listitem"><div class="step">edge</div><div class="name">Cloudflare</div><div class="what">The <code>takeova.ai</code> zone, proxied. Custom hostnames terminate TLS here with a Cloudflare DV certificate. Sets <code>cf-connecting-ip</code> and <code>cf-ipcountry</code>.</div></div>
+    <div class="hop" role="listitem"><div class="step">aws</div><div class="name">Express Mode ALB</div><div class="what">A hand-added host rule for <code>*.staging.takeova.ai</code> and <code>customers.takeova.ai</code>. The wildcard ACM certificate is attached by SNI.</div></div>
+    <div class="hop" role="listitem"><div class="step">:3000</div><div class="name">api-gateway</div><div class="what"><code>SiteHostMiddleware</code> is registered first, before CORS, cookies and the Nest router.</div></div>
+    <div class="hop" role="listitem"><div class="step">rmq</div><div class="name">tenant-service</div><div class="what"><code>GET_BY_HOST</code> or <code>GET_BY_CUSTOM_HOST</code>. Checks that the site is published, the tenant is active, and (for a custom domain) the domain is ACTIVE.</div></div>
+    <div class="hop" role="listitem"><div class="step">pg</div><div class="name">Rendered HTML</div><div class="what"><code>SitePage.renderedHtml</code>, cached in Redis for 30 s. The gateway sets the CSP, injects scripts and emits analytics.</div></div>
+  </div>
+
+  <div class="note info">
+    <div class="t">Where custom-domain traffic enters AWS</div>
+    <p>A merchant's domain is a CNAME to <code>customers.takeova.ai</code>. Cloudflare for SaaS sends that traffic to the origin with the merchant's own <code>Host</code> header. The ALB rule lists <code>customers.takeova.ai</code>, but a header like <code>Host: shop.example.com</code> matches neither rule value. It reaches the gateway through the listener's <strong>default forward action</strong>, which the reconciler Lambda keeps pointed at the live target group. This is inferred from the rule values and the reconciler. The Cloudflare fallback-origin and SSL-mode settings live only in the Cloudflare dashboard.</p>
+  </div>
+
+  <h3>Paths on a tenant host</h3>
+  <p>Once the gateway knows the site, it routes by path (<code>site-host.middleware.ts</code> <code>serve()</code>):</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Path</th><th>Handled by</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td><code>/site-assets/</code>, <code>/_forms/</code>, <code>/_sb/</code></td><td>Normal Nest routes</td><td>Pass straight through. The exception is the <code>/_sb/e</code> and <code>/_sb/c</code> POST beacons, which are resolved by host. Same-origin form and chat posts skip CORS (the fix for the 2026-10-08 incident).</td></tr>
+      <tr><td><code>/portal…</code></td><td>Reverse proxy → <code>PORTAL_ORIGIN_URL</code></td><td>Adds <code>x-takeova-site: &lt;label or full custom host&gt;</code>. The portal app keeps its own CSP.</td></tr>
+      <tr><td><code>/bio…</code></td><td>Reverse proxy → <code>MARKETING_ORIGIN_URL</code></td><td>Rewritten to <code>/bio/&lt;host&gt;/&lt;slug&gt;</code>. <span class="pill p-warn">not set on staging</span></td></tr>
+      <tr><td><code>/store…</code></td><td>Gateway store router</td><td>Has its own cache key, <code>store-site:v4:&lt;host&gt;</code>, with a 30 s TTL.</td></tr>
+      <tr><td>everything else</td><td><code>handleTenantSiteRequest</code></td><td>Splits off the locale, reads the cache, calls the RPC, and returns 404, or 410 if the trial window expired. Applies A/B tests, chat and engage scripts, and the CSP for each page.</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<!-- 3 -->
+<section id="subdomains">
+  <h2><span class="n">03</span>Subdomains</h2>
+  <p class="sub">The subdomain is the site's permanent address. It keeps working after a custom domain is connected, and after one is removed.</p>
+
+  <h3>How a site gets one</h3>
+  <div class="cols">
+    <div class="card">
+      <h4>Onboarding</h4>
+      <p>Assigned by the server in <code>completeOnboarding</code>. The user does not pick it.</p>
+      <ul>
+        <li>The business name is slugified (<code>[^a-z0-9]+ → -</code>, at most 50 characters, falling back to <code>site</code>).</li>
+        <li>Candidates are <code>slug</code>, <code>slug-1</code> … <code>slug-49</code>. Reserved names are skipped, and all candidates are checked in one query.</li>
+        <li>If none is free, the call throws <code>SUBDOMAIN_ALLOCATION_FAILED</code>. On a P2002 conflict the transaction is retried once.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h4>Anonymous builder (marketing)</h4>
+      <p>A build starts on <code>preview-&lt;suffix&gt;</code>. <code>publishAnonymousBuild</code> moves it to a real subdomain for 24 h (<code>publishedUntil</code>) and does not cost a credit.</p>
+      <ul>
+        <li>Candidates are <code>base</code>, <code>base-2…4</code> and <code>base-&lt;uuid8&gt;</code>.</li>
+        <li>A stricter rule applies here: 3–63 characters, no <code>xn--</code>, and a list of about 40 reserved labels.</li>
+        <li>When a user claims the build, the label moves to their site through a temporary <code>claimed-&lt;session&gt;</code> label.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h4>Renaming</h4>
+      <p><code>updateSiteSubdomain</code> is available from the dashboard (Settings → Domain &amp; site) and the editor (Site settings → Domains).</p>
+      <ul>
+        <li>The value is trimmed and lowercased. Saving the current value does nothing.</li>
+        <li>Errors: <code>SUBDOMAIN_RESERVED</code>, <code>SUBDOMAIN_TAKEN</code> (from the P2002 unique violation), <code>SITE_NOT_FOUND</code>.</li>
+        <li>The old label is <strong>freed immediately</strong>, with no redirect. Cached copies of the old host expire within 30–60 s.</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3>Validation</h3>
+  <p>The gateway DTO, the tenant DTO and both frontend forms all use the same DNS-label pattern:</p>
+  <pre class="code">/^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$/   <span class="c">// 1–63 chars, no leading/trailing dash</span></pre>
+  <p>No availability-check query exists. A user finds out the name is taken only after saving.</p>
+
+  <h3>Reserved names: three lists that disagree</h3>
+  <div class="tbl"><table>
+    <thead><tr><th>List</th><th>Where</th><th>Used for</th><th>Contents</th></tr></thead>
+    <tbody>
+      <tr><td><code>RESERVED_SUBDOMAINS</code></td><td class="wrap"><code>tenant-service/src/sites/constants/reserved-subdomains.constant.ts</code></td><td>Onboarding allocation and rename</td><td class="num">22 labels: www, api, app, admin, dashboard, portal, auth, login, cdn, static, assets, mail, blog, help, support, status, docs, staging, dev, test, internal, takeova</td></tr>
+      <tr><td><code>RESERVED_HOSTS</code></td><td class="wrap"><code>api-gateway/src/sites/site-host-name.util.ts</code></td><td>Labels the gateway never treats as a tenant site</td><td>www, api, app, admin, takeova</td></tr>
+      <tr><td><code>RESERVED_LABELS</code></td><td class="wrap"><code>libs/shared/src/site-builder/anonymous-publish.ts</code></td><td>Anonymous publish only</td><td>About 40. Adds preview, smtp, imap, ftp, ns*, mx, billing, payment(s), account(s), secure, verify, official…</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>TLS for subdomains</h3>
+  <p>An ACM wildcard certificate for <code>*.staging.takeova.ai</code> is attached to the Express Mode ALB listener by SNI, with Cloudflare proxied in front (proxied since 30 Sep 2026, confirmed by a <code>cf-ray</code> header). Multi-level labels such as <code>a.b.staging.takeova.ai</code> fail the label pattern and are not served. No certificate exists for bare <code>*.takeova.ai</code> yet.</p>
+</section>
+
+<!-- 4 -->
+<section id="custom">
+  <h2><span class="n">04</span>Custom domains</h2>
+  <p class="sub">A merchant connects a domain they already own. Takeova does not sell or register domains, and it never touches the merchant's DNS.</p>
+
+  <h3>The record the merchant adds</h3>
+  <div class="zone"><span class="c">; one record, at the merchant's DNS provider</span><br>
+<span class="k">shop.example.com.</span>   3600   IN   CNAME   <span class="k">customers.takeova.ai.</span><br>
+<span class="c">; apex (example.com) needs a provider that supports CNAME flattening / ALIAS. No A-record fallback is offered.</span></div>
+
+  <h3>Connect flow</h3>
+  <div class="mermaid-wrap"><pre class="mermaid">
+sequenceDiagram
+    autonumber
+    actor M as Merchant
+    participant UI as Editor / Dashboard
+    participant GW as api-gateway
+    participant TS as tenant-service
+    participant DB as Postgres
+    participant CF as Cloudflare for SaaS
+    M->>UI: Enter shop.example.com
+    UI->>GW: setCustomDomain(siteId, domain)
+    GW->>TS: RMQ tenant.sites.set-custom-domain
+    TS->>TS: normalize + reject *.takeova.ai
+    TS->>DB: claim domain, status PENDING
+    TS->>CF: POST /custom_hostnames {ssl: http, dv}
+    alt Cloudflare error
+        TS->>DB: roll back all 5 columns
+        TS-->>UI: CLOUDFLARE_REQUEST_FAILED
+    else created
+        TS->>DB: store cloudflareHostnameId
+        TS-->>UI: {domain, PENDING, cnameTarget}
+    end
+    M->>M: Add CNAME at DNS provider
+    loop every 2 minutes
+        TS->>CF: GET /custom_hostnames/{id}
+        TS->>DB: ACTIVE or FAILED, then email owner
+    end
+</pre></div>
+
+  <ol class="steps">
+    <li><div><strong>Access check.</strong> <code>assertSiteAccessible</code> confirms the tenant owns the site and the team member's site scope covers it. The resolver also requires the <code>STORE_SITES</code> permission.</div></li>
+    <li><div><strong>Normalize.</strong> <code>@IsFQDN()</code> runs on both DTOs. The value is then trimmed and lowercased, a trailing dot is stripped, and it is converted to punycode with <code>domainToASCII</code>. The base domain and anything under it are rejected with <code>CUSTOM_DOMAIN_NOT_ALLOWED</code>.</div></li>
+    <li><div><strong>Provider check.</strong> If <code>CLOUDFLARE_CNAME_TARGET</code>, the token or the zone id is missing, the call fails with <code>CUSTOM_DOMAIN_PROVIDER_NOT_CONFIGURED</code>. These env vars are optional at boot, so the gap only shows up when a user tries to connect.</div></li>
+    <li><div><strong>Idempotent re-save.</strong> If the same domain is already stored with a hostname id, the call returns the current status and does nothing else. The UI blocks this too, because re-sending once disconnected a working domain.</div></li>
+    <li><div><strong>Claim, then register.</strong> The domain is written as PENDING first, so the unique index settles races (<code>CUSTOM_DOMAIN_ALREADY_IN_USE</code>). Then Cloudflare is called. If Cloudflare fails, all five columns are restored to their previous values.</div></li>
+    <li><div><strong>Swap.</strong> When domain A is replaced by B, A's Cloudflare hostname is deleted on a best-effort basis after B registers.</div></li>
+    <li><div><strong>Return.</strong> <code>{ domain, status: 'PENDING', cnameTarget }</code>. The editor shows that <code>cnameTarget</code>; the dashboard shows its own hardcoded copy (see <a href="#ui">section 09</a>).</div></li>
+  </ol>
+
+  <h3>Verification and status lifecycle</h3>
+  <p>No DNS lookups happen. <code>CustomDomainPollerService</code> in tenant-service runs <code>@Cron('*/2 * * * *')</code>. It reads every PENDING row and asks Cloudflare for each one, in batches of 10. Rows within a batch run in parallel, and the batches run one after another. A failed Cloudflare read is logged and retried on the next run, and never marks a domain FAILED.</p>
+
+  <div class="mermaid-wrap"><pre class="mermaid">
+stateDiagram-v2
+    direction LR
+    [*] --> PENDING: setCustomDomain
+    PENDING --> ACTIVE: CF status active AND ssl active
+    PENDING --> FAILED: terminal SSL state, CF deleted, or older than 14 days
+    PENDING --> [*]: removeCustomDomain
+    ACTIVE --> [*]: removeCustomDomain
+    FAILED --> [*]: removeCustomDomain
+    note right of FAILED
+        Dead end. Re-saving the same domain is a no-op,
+        so the merchant must remove it and add it again.
+    end note
+    note right of ACTIVE
+        Never re-polled.
+    end note
+</pre></div>
+
+  <pre class="code"><span class="c">// tenant-service/src/sites/custom-domain-classifier.ts</span>
+if (cfStatus === 'active' &amp;&amp; sslStatus === 'active')      → ACTIVE
+if (TERMINAL.has(sslStatus) || cfStatus === 'deleted')   → FAILED  <span class="c">// CLOUDFLARE_TERMINAL_FAILURE</span>
+if (now - requestedAt &gt; 14 days)                         → FAILED  <span class="c">// STALE</span>
+otherwise                                                → UNCHANGED
+
+TERMINAL = initializing_timed_out, validation_timed_out, issuance_timed_out,
+           deployment_timed_out, deletion_timed_out, expired, deactivating, inactive</pre>
+
+  <p>On each change of state the owner gets an email: <em>"&lt;domain&gt; is now live on TAKEOVA"</em> or <em>"We couldn't verify &lt;domain&gt;"</em>. ACTIVE also stamps <code>customDomainVerifiedAt</code>. Cloudflare's specific failure reason is not stored. For details, support looks the hostname up in Cloudflare by the <code>cloudflareHostnameId</code> shown in admin.</p>
+
+  <h3>Removing a domain</h3>
+  <p><code>removeCustomDomain</code> deletes the Cloudflare hostname on a best-effort basis (errors are logged and ignored) and always clears all five columns. The subdomain keeps serving. Neither the dashboard nor the editor asks for confirmation.</p>
+</section>
+
+<!-- 5 -->
+<section id="routing">
+  <h2><span class="n">05</span>Routing inside the gateway</h2>
+  <p class="sub"><code>apps/api-gateway/src/sites/site-host.middleware.ts</code> decides whether a request is a tenant site before any other part of Nest runs.</p>
+
+  <h3>Host classification, in order</h3>
+  <ol class="steps">
+    <li><div><strong>Subdomain.</strong> <code>extractSubdomain(host, SITE_BASE_DOMAIN)</code> strips the port and lowercases. The host must end in <code>.staging.takeova.ai</code>, the label must match the DNS-label pattern, and it must not be in <code>RESERVED_HOSTS</code>. A match is looked up with <code>GET_BY_HOST</code>, cache prefix <code>site-host:</code>.</div></li>
+    <li><div><strong>Custom-domain candidate.</strong> <code>extractCustomDomainCandidate</code> rejects bare IPs (ALB health checks), <code>localhost</code>, single-label hosts, the base-domain family and <code>*.on.aws</code> (the gateway's own Express host). What remains must match the FQDN pattern. It is looked up with <code>GET_BY_CUSTOM_HOST</code>, cache prefix <code>site-custom-host:</code>.</div></li>
+    <li><div><strong>Neither.</strong> <code>next()</code>: the request is ordinary API traffic (GraphQL, REST).</div></li>
+  </ol>
+
+  <h3>What tenant-service checks before returning HTML</h3>
+  <div class="tbl"><table>
+    <thead><tr><th>Lookup</th><th>WHERE</th><th>Extra</th></tr></thead>
+    <tbody>
+      <tr><td><code>getByHost</code></td><td class="wrap"><code>subdomain = label</code> · <code>isPublished</code> · tenant <code>siteEnabled</code> and <code>ACTIVE</code> · within <code>publishedUntil</code></td><td>A lapsed anonymous trial returns <code>SITE_PUBLISH_EXPIRED</code>, served as 410.</td></tr>
+      <tr><td><code>getByCustomHost</code></td><td class="wrap"><code>customDomain = host</code> · <code>customDomainStatus = ACTIVE</code> · <code>isPublished</code> · tenant active</td><td>A PENDING domain never serves. No publish-window check (anonymous sites can't have a custom domain).</td></tr>
+      <tr><td><code>resolvePublic</code></td><td class="wrap"><code>subdomain = host OR (customDomain = host AND ACTIVE)</code> · published · tenant active</td><td>Identity only. Used by the storefront and portal APIs via <code>x-takeova-site</code>.</td></tr>
+    </tbody>
+  </table></div>
+  <p>The page body comes from <code>withPageHtml</code>, in this order: the page's <code>SitePage.renderedHtml</code>, then <code>Site.siteHtml</code> for the home page, then dynamic pages, then the site's own <code>NOT_FOUND</code> system page.</p>
+
+  <h3>Caches keyed by host</h3>
+  <div class="tbl"><table>
+    <thead><tr><th>Key</th><th>TTL</th><th>Written by</th></tr></thead>
+    <tbody>
+      <tr><td><code>site-host:&lt;label&gt;[:&lt;locale&gt;]:&lt;path&gt;</code></td><td class="num">30 s</td><td>Site-host middleware (subdomain)</td></tr>
+      <tr><td><code>site-custom-host:&lt;fqdn&gt;[:&lt;locale&gt;]:&lt;path&gt;</code></td><td class="num">30 s</td><td>Site-host middleware (custom domain)</td></tr>
+      <tr><td><code>storefront:site:&lt;host&gt;</code></td><td class="num">60 s</td><td><code>StorefrontContextService.resolveSite</code></td></tr>
+      <tr><td><code>store-site:v4:&lt;host&gt;</code></td><td class="num">30 s</td><td>Public store router. <span class="pill p-warn">publish deletes <code>store-site:</code> without <code>v4</code></span></td></tr>
+    </tbody>
+  </table></div>
+  <p><code>SiteRenderCacheService.dropHostCache</code> clears these keys for the site's <em>current</em> subdomain and custom domain when a site is published or unpublished. Renaming the subdomain, connecting a domain, swapping it or removing it does not invalidate anything.</p>
+</section>
+
+<!-- 6 -->
+<section id="canonical">
+  <h2><span class="n">06</span>The canonical public host</h2>
+  <p class="sub">One rule decides which address Takeova prints in links, emails and canonical tags: <strong>the custom domain if it is ACTIVE, otherwise <code>&lt;subdomain&gt;.SITE_BASE_DOMAIN</code></strong>.</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Where</th><th>Implementation</th><th>Uses it for</th></tr></thead>
+    <tbody>
+      <tr><td>Publish</td><td><code>SitePublishService.publicHost()</code></td><td><code>&lt;link rel=canonical&gt;</code>, hreflang URLs, the returned live URL, and the post-publish verifier fetch</td></tr>
+      <tr><td>Commerce</td><td><code>commerce-service/src/customers/site-host.util.ts</code></td><td>Orders, enrollments, booking cancellation, community, abandoned-cart and fulfilment emails</td></tr>
+      <tr><td>Checkout</td><td><code>checkout/return-url.service.ts</code></td><td>Return-URL allowlist: the single public host, <code>CUSTOMER_PORTAL_URL</code> and the extra origins</td></tr>
+      <tr><td>Portal links</td><td><code>CustomersService.portalLoginUrl</code></td><td><code>https://&lt;host&gt;/portal/login</code></td></tr>
+      <tr><td>Exception</td><td><code>member-messaging.service.ts</code> <code>tierJoinUrl</code></td><td><span class="pill p-warn">always uses the subdomain</span></td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="note warn">
+    <div class="t">Consequences of a single public host</div>
+    <ul>
+      <li><strong>Canonical tags are baked in at publish.</strong> If a domain becomes ACTIVE after the last publish, pages still point their canonical and hreflang tags at the subdomain until the merchant republishes. The poller does not trigger a re-render.</li>
+      <li><strong>The subdomain is never redirected.</strong> Both hosts serve 200 with the same content. No 301 sends traffic to the custom domain.</li>
+      <li><strong>Checkout started on the subdomain is refused once a domain is ACTIVE.</strong> The return URL must match the one public host. A test pins this on purpose ("replaces the subdomain host rather than adding to it").</li>
+    </ul>
+  </div>
+</section>
+
+<!-- 7 -->
+<section id="data">
+  <h2><span class="n">07</span>Data model</h2>
+  <p class="sub">Domains belong to a <strong>Site</strong> (<code>mine_sites</code>), not to a tenant. A tenant with several sites has a subdomain per site and up to one custom domain per site.</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Column</th><th>Type</th><th>Meaning</th></tr></thead>
+    <tbody>
+      <tr><td><code>subdomain</code></td><td><code>String @unique</code></td><td>Required. A DNS label, globally unique.</td></tr>
+      <tr><td><code>isPublished</code></td><td><code>Boolean</code></td><td>Both host lookups require it.</td></tr>
+      <tr><td><code>publishedUntil</code></td><td><code>DateTime?</code></td><td>The 24 h anonymous-trial window. Only <code>getByHost</code> checks it.</td></tr>
+      <tr><td><code>customDomain</code></td><td><code>String? @unique</code></td><td>Normalized FQDN (lowercase, punycode).</td></tr>
+      <tr><td><code>customDomainStatus</code></td><td><code>CustomDomainStatus?</code></td><td><span class="pill p-warn">PENDING</span> <span class="pill p-ok">ACTIVE</span> <span class="pill p-bad">FAILED</span>. Indexed for the poller.</td></tr>
+      <tr><td><code>cloudflareHostnameId</code></td><td><code>String?</code></td><td>The Cloudflare custom-hostname id. Used for support diagnostics.</td></tr>
+      <tr><td><code>customDomainRequestedAt</code></td><td><code>Timestamptz?</code></td><td>Starts the 14-day staleness clock.</td></tr>
+      <tr><td><code>customDomainVerifiedAt</code></td><td><code>Timestamptz?</code></td><td>Stamped when the domain becomes ACTIVE.</td></tr>
+    </tbody>
+  </table></div>
+  <p>The five <code>customDomain*</code> and <code>cloudflareHostnameId</code> columns are always written or cleared together. There is no SSL-status column (SSL state is folded into the status), no TXT token, no primary-domain flag and no separate domains table.</p>
+
+  <h4>Migrations</h4>
+  <div class="tbl"><table>
+    <thead><tr><th>Migration</th><th>Adds</th></tr></thead>
+    <tbody>
+      <tr><td><code>20260804170000_baseline_current_schema</code></td><td><code>subdomain</code> and its unique index</td></tr>
+      <tr><td><code>20260806180000_site_custom_domain</code></td><td>The enum, the five columns, the unique index and the status index</td></tr>
+      <tr><td><code>20260910210000_anonymous_publish_window</code></td><td><code>publishedUntil</code></td></tr>
+      <tr><td><code>20260910220000_site_builder_usage_metrics</code></td><td>The <code>siteCustomDomains</code> metric and its plan caps</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<!-- 8 -->
+<section id="api">
+  <h2><span class="n">08</span>API surface</h2>
+  <p class="sub">GraphQL lives on the api-gateway (<code>sites.resolver.ts</code>). Every call is an RMQ RPC to tenant-service.</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Operation</th><th>Guards</th><th>RMQ pattern</th><th>Returns</th></tr></thead>
+    <tbody>
+      <tr><td><code>tenantSites</code></td><td>Auth · TenantAccess</td><td><code>tenant.sites.list</code></td><td><code>TenantSiteType</code> incl. <code>customDomain*</code>, <code>cnameTarget</code>, <code>baseDomain</code></td></tr>
+      <tr><td><code>mySites</code></td><td>Auth · UserSession</td><td><code>tenant.sites.list-for-user</code></td><td>Sites with domain fields (no <code>cnameTarget</code>)</td></tr>
+      <tr><td><code>updateSiteSubdomain</code></td><td>Auth · TenantAccess <span class="pill p-bad">no PermissionsGuard</span></td><td><code>tenant.sites.update-subdomain</code></td><td><code>TenantSiteType</code></td></tr>
+      <tr><td><code>setCustomDomain</code></td><td>Auth · TenantAccess · <code>STORE_SITES</code></td><td><code>tenant.sites.set-custom-domain</code></td><td><code>{ domain, status, cnameTarget }</code></td></tr>
+      <tr><td><code>removeCustomDomain</code></td><td>Auth · TenantAccess · <code>STORE_SITES</code></td><td><code>tenant.sites.remove-custom-domain</code></td><td><code>{ message }</code></td></tr>
+      <tr><td><code>adminSites</code> / <code>adminSite</code> / overview</td><td>Admin</td><td>admin-service</td><td>Status filters, counts, <code>cloudflareHostnameId</code></td></tr>
+    </tbody>
+  </table></div>
+  <p>Anonymous (no request context) patterns used by the gateway itself: <code>tenant.sites.get-by-host</code>, <code>tenant.sites.get-by-custom-host</code>, <code>tenant.sites.resolve-public</code>.</p>
+
+  <h4>Error codes</h4>
+  <div class="tbl"><table>
+    <thead><tr><th>Code</th><th>When</th></tr></thead>
+    <tbody>
+      <tr><td><code>SUBDOMAIN_TAKEN</code></td><td>Rename collides (P2002)</td></tr>
+      <tr><td><code>SUBDOMAIN_RESERVED</code></td><td>Label is in <code>RESERVED_SUBDOMAINS</code></td></tr>
+      <tr><td><code>SUBDOMAIN_ALLOCATION_FAILED</code></td><td>Onboarding exhausted 50 candidates</td></tr>
+      <tr><td><code>CUSTOM_DOMAIN_ALREADY_IN_USE</code></td><td>Another site holds the domain (P2002)</td></tr>
+      <tr><td><code>CUSTOM_DOMAIN_NOT_ALLOWED</code></td><td>The domain is <code>SITE_BASE_DOMAIN</code> or under it</td></tr>
+      <tr><td><code>CUSTOM_DOMAIN_PROVIDER_NOT_CONFIGURED</code></td><td>The Cloudflare env vars are missing</td></tr>
+      <tr><td><code>CLOUDFLARE_REQUEST_FAILED</code></td><td>The Cloudflare API call failed (the change is rolled back)</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<!-- 9 -->
+<section id="ui">
+  <h2><span class="n">09</span>What users see</h2>
+  <p class="sub">Three frontend surfaces cover domains. They were built at different times and disagree on several details.</p>
+
+  <div class="cols">
+    <div class="card">
+      <h4>Dashboard</h4>
+      <p>Settings → Domain &amp; site (<code>DomainAndSitePanel</code>), and Sites → overview (<code>SiteDomainPanel</code>). Both open <code>CustomDomainSetup</code> and <code>SubdomainSetup</code>.</p>
+      <ul>
+        <li>Data comes from <code>mySites</code>, re-polled every 90 s. Changes are applied optimistically.</li>
+        <li>The CNAME target is <strong>hardcoded</strong> as <code>customers.takeova.ai</code>.</li>
+        <li>DNS Host field: the <strong>full domain</strong>.</li>
+        <li>Has no plan-cap check.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h4>Editor</h4>
+      <p>Site settings → Domains (<code>DomainsTab</code>, <code>use-site-domains</code>).</p>
+      <ul>
+        <li>Re-reads from the server after every write, because Cloudflare and the poller own the status.</li>
+        <li>The CNAME target comes from <strong>the server</strong> (<code>cnameTarget</code>).</li>
+        <li>DNS Host field: always <strong><code>@</code></strong>, even for <code>www.example.com</code>.</li>
+        <li>Locks the row when the plan cap is 0. Footer button: "Verify &amp; Save".</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h4>Admin</h4>
+      <p>Sites list, site detail and its Domain tab. Read-only.</p>
+      <ul>
+        <li>Filters: domain status and has-custom-domain. Search covers <code>customDomain</code>.</li>
+        <li>"Domains needing attention" = pending + failed.</li>
+        <li>Shows requested and verified times, how long a domain has been pending, and the Cloudflare hostname id.</li>
+        <li>The live-site link text always shows the subdomain, even when the link goes to the custom domain.</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3>Status labels across the surfaces</h3>
+  <div class="tbl"><table>
+    <thead><tr><th>Status</th><th>Dashboard panel</th><th>Dashboard setup</th><th>Sites panel</th><th>Editor</th><th>Admin</th></tr></thead>
+    <tbody>
+      <tr><td><span class="pill p-ok">ACTIVE</span></td><td>Connected</td><td>Connected</td><td>Connected</td><td>Connected</td><td>Active</td></tr>
+      <tr><td><span class="pill p-warn">PENDING</span></td><td>Connecting...</td><td>Connecting…</td><td>Connecting…</td><td>Verifying</td><td>Pending</td></tr>
+      <tr><td><span class="pill p-bad">FAILED</span></td><td>Connection failed</td><td>Connection failed</td><td>Failed</td><td>Failed</td><td>Failed</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Client-side validation</h3>
+  <pre class="code"><span class="c">// subdomain (dashboard + editor, mirrors the server DTO)</span>
+/^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$/
+
+<span class="c">// custom domain (deliberately loose; the server's @IsFQDN and Cloudflare are the real checks)</span>
+/^(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,}$/i     <span class="c">// max 253, http(s):// and trailing / stripped</span></pre>
+
+  <h3>Hardcoded hosts in the frontend</h3>
+  <p><code>staging.takeova.ai</code> is a display constant in <code>mfe-dashboard/.../site-display.ts</code> and <code>mfe-admin/lib/format.ts</code>, and the editor's last-resort fallback. The editor prefers the server's <code>baseDomain</code>, then the host from <code>sitePublishStatus</code>. <code>NEXT_PUBLIC_SITE_BASE_DOMAIN</code> exists, but its only consumer, <code>resolveSitePublicHost</code>, is never called in production code. The site switcher, Manage Websites dialog and door-access panel always show the subdomain, never the custom domain.</p>
+</section>
+
+<!-- 10 -->
+<section id="infra">
+  <h2><span class="n">10</span>Infrastructure &amp; config</h2>
+  <p class="sub">Most of the edge was set up by hand, outside the repo. The repo holds the zone id, a certificate ARN, and code that repairs drift.</p>
+
+  <h3>Pieces and where they live</h3>
+  <div class="tbl"><table>
+    <thead><tr><th>Piece</th><th>Defined in</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td>Cloudflare <code>takeova.ai</code> zone, DNS, proxy, SaaS fallback origin, SSL mode</td><td><span class="pill p-mute">dashboard only</span></td><td>The repo records the zone id and the target <code>customers.takeova.ai</code>, not where it points.</td></tr>
+      <tr><td>ACM wildcard <code>*.staging.takeova.ai</code></td><td><span class="pill p-mute">created by hand</span></td><td>Its ARN is the default in <code>alb-tenant-rule-reconciler.yaml</code>.</td></tr>
+      <tr><td>Express Mode ALB (api-gateway)</td><td>AWS CLI, not CloudFormation</td><td>AWS owns it. It sometimes recreates the ALB, and blue/green deploys swap target groups.</td></tr>
+      <tr><td>Tenant host rule (priority 2)</td><td>Added by hand</td><td>Host values <code>*.staging.takeova.ai, customers.takeova.ai</code>.</td></tr>
+      <tr><td>Rule reconciler Lambda</td><td><code>infra/cloudformation/environments/alb-tenant-rule-reconciler.yaml</code></td><td>Runs every minute. Copies target-group weights, restores the default forward action and re-attaches the SNI certificate. Without it, every tenant gets a flat 503 (the 2026-08-17 outage).</td></tr>
+      <tr><td>Deploy-time sync</td><td><code>scripts/deploy/sync-tenant-alb-rule.sh</code></td><td>Does the same weight sync during CI and rollback.</td></tr>
+      <tr><td>Frontend apps</td><td>Amplify Hosting behind Cloudflare</td><td>Receive tenant-host traffic only for <code>/portal</code> and <code>/bio</code>, through the gateway proxy. No <code>middleware.ts</code> in any app.</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Environment variables</h3>
+  <div class="tbl"><table>
+    <thead><tr><th>Variable</th><th>Service</th><th>Staging value</th><th>Purpose</th></tr></thead>
+    <tbody>
+      <tr><td><code>SITE_BASE_DOMAIN</code></td><td>api-gateway, commerce</td><td><code>staging.takeova.ai</code></td><td>Subdomain suffix. The code default is <code>takeova.ai</code>.</td></tr>
+      <tr><td><code>SITE_BASE_DOMAIN</code></td><td>tenant-service</td><td><span class="pill p-warn">not set in template</span></td><td>Falls back to <code>takeova.ai</code>. This feeds <code>baseDomain</code> in the editor and the "not your own domain" check.</td></tr>
+      <tr><td><code>CLOUDFLARE_API_TOKEN</code></td><td>tenant-service</td><td>secret</td><td>Scope: Zone → SSL and Certificates → Edit on <code>takeova.ai</code>.</td></tr>
+      <tr><td><code>CLOUDFLARE_ZONE_ID</code></td><td>tenant-service</td><td><code>5195baf0…</code></td><td>The <code>takeova.ai</code> zone.</td></tr>
+      <tr><td><code>CLOUDFLARE_CNAME_TARGET</code></td><td>tenant-service</td><td><code>customers.takeova.ai</code></td><td>The target every merchant CNAMEs to.</td></tr>
+      <tr><td><code>PORTAL_ORIGIN_URL</code></td><td>api-gateway</td><td><code>develop.d39ictq7k4yjq7.amplifyapp.com</code></td><td>Upstream for <code>/portal</code>.</td></tr>
+      <tr><td><code>MARKETING_ORIGIN_URL</code></td><td>api-gateway</td><td><span class="pill p-warn">not set</span></td><td>Upstream for <code>/bio</code>.</td></tr>
+      <tr><td><code>CORS_ALLOWED_WILDCARD_DOMAINS</code></td><td>api-gateway</td><td><code>*.takeova.ai</code></td><td><span class="pill p-mute">read by no code</span></td></tr>
+      <tr><td><code>NEXT_PUBLIC_SITE_BASE_DOMAIN</code></td><td>frontend</td><td><code>takeova.ai</code></td><td>Its only consumer is unused, so it has no visible effect.</td></tr>
+    </tbody>
+  </table></div>
+  <p>The tenant-service row comes from reading the CloudFormation task definition, which sets only <code>NODE_ENV</code> and secrets. Confirm it against the live task definition before acting on it.</p>
+</section>
+
+<!-- 11 -->
+<section id="security">
+  <h2><span class="n">11</span>CORS, CSP &amp; trust</h2>
+  <div class="cols">
+    <div class="card">
+      <h4>CORS</h4>
+      <ul>
+        <li>An exact-match allowlist, plus <code>*.localhost</code> outside production. Tenant hosts are <strong>never</strong> allowed: auth cookies are <code>SameSite=None</code>, so a wildcard would let one tenant's page make credentialed requests as a logged-in dashboard user.</li>
+        <li>Same-origin posts to <code>/_forms/</code> and <code>/_sb/</code> are exempt.</li>
+        <li>The frontend GraphQL proxy drops <code>Origin</code> so the portal works on tenant hosts.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h4>CSP</h4>
+      <ul>
+        <li>Site-builder pages get a CSP built from the page itself: a sha256 hash per <code>&lt;style&gt;</code>, <code>script-src 'none'</code> when the page has no script, and embeds limited to YouTube-nocookie, Vimeo and Google Maps.</li>
+        <li>The store and legacy HTML use <code>TENANT_SITE_CSP</code> (Stripe, Google Fonts, <code>frame-ancestors 'none'</code>).</li>
+        <li><code>/portal</code> and <code>/bio</code> keep their upstream app's CSP.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h4>Trust boundary</h4>
+      <ul>
+        <li>Visitor IP comes from <code>cf-connecting-ip</code>, and country from <code>cf-ipcountry</code>.</li>
+        <li>The origins (the ALB and <code>*.amplifyapp.com</code>) are <strong>not locked to Cloudflare</strong>. Anyone who calls the origin directly can forge these headers.</li>
+        <li>Presigned asset redirects send <code>Cache-Control: private</code>. Cloudflare once cached them on custom domains past their expiry.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- 12 -->
+<section id="caps">
+  <h2><span class="n">12</span>Plan caps</h2>
+  <p class="sub">Metric <code>siteCustomDomains</code> (PLATFORM, QUOTA) is seeded in <code>site-builder-metrics.constant.ts</code> and its migration.</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Plan</th><th>starter</th><th>growth</th><th>pro</th><th>agency</th><th>enterprise</th><th>agency_client</th></tr></thead>
+    <tbody>
+      <tr><td>Custom domains</td><td class="num">0</td><td class="num">1</td><td class="num">5</td><td class="num">25</td><td class="num">unlimited</td><td>same as enterprise</td></tr>
+    </tbody>
+  </table></div>
+  <div class="note bad">
+    <div class="t">Enforced in the editor UI only</div>
+    <p>Neither the resolver nor <code>SitesService.setCustomDomain</code> calls <code>decideCap</code> or the billing usage check, unlike <code>sitePages</code> and <code>siteGenerations</code>. A grep for <code>siteCustomDomains</code> outside the constants file finds nothing. The editor locks the row when the cap is 0. The dashboard's <code>CustomDomainSetup</code> has no check, so a Starter tenant can connect a domain from the dashboard today, or by calling the API directly.</p>
+  </div>
+</section>
+
+<!-- 13 -->
+<section id="gaps">
+  <h2><span class="n">13</span>Known gaps</h2>
+  <p class="sub">Ranked by how likely each one is to hurt a merchant or the business. Nothing in this flow has been tested end to end against a live gateway with a real domain (QA items D6 and E-14 are still open).</p>
+
+  <div class="gaps">
+    <div class="gap"><span class="sev"><span class="pill p-bad">high</span></span><div>
+      <h4>The plan cap is not enforced on the server</h4>
+      <p>Starter tenants (cap 0) can connect a domain through the dashboard or the API. The fix is a <code>decideCap</code> check in <code>setCustomDomain</code>, the same pattern the other site-builder metrics use.</p>
+      <div class="src">tenant-service/src/sites/sites.service.ts · setCustomDomain</div></div></div>
+
+    <div class="gap"><span class="sev"><span class="pill p-bad">high</span></span><div>
+      <h4>The dashboard and editor give different DNS instructions</h4>
+      <p>The dashboard says Host = the full domain, with a hardcoded target. The editor says Host = <code>@</code> for every domain, so a merchant connecting <code>www.example.com</code> is told to put the CNAME on the apex. A CNAME at the apex also needs a provider that supports flattening. No A-record or ALIAS guidance exists.</p>
+      <div class="src">DomainsTab.tsx · CustomDomainSetup.tsx · site-display.ts</div></div></div>
+
+    <div class="gap"><span class="sev"><span class="pill p-bad">high</span></span><div>
+      <h4><code>updateSiteSubdomain</code> skips permissions and site scope</h4>
+      <p>It has no <code>PermissionsGuard</code>, and the service does not apply the team-member site scoping that <code>assertSiteAccessible</code> gives the custom-domain mutations. Any team member can rename any site's public address.</p>
+      <div class="src">api-gateway/src/sites/sites.resolver.ts · sites.service.ts updateSubdomain</div></div></div>
+
+    <div class="gap"><span class="sev"><span class="pill p-warn">medium</span></span><div>
+      <h4>FAILED is a dead end</h4>
+      <p>Re-saving the same domain does nothing, and no re-check mutation exists. The failure email says to try connecting again, but the only way out is to remove the domain and add it again. ACTIVE domains are never re-polled either, so if Cloudflare later revokes a domain, Takeova doesn't notice.</p>
+      <div class="src">sites.service.ts:367-369 · custom-domain-poller.service.ts</div></div></div>
+
+    <div class="gap"><span class="sev"><span class="pill p-warn">medium</span></span><div>
+      <h4>Domain changes don't re-render pages or clear caches</h4>
+      <p>Pages keep their subdomain canonical and hreflang URLs until the next publish. The subdomain is never 301-redirected to the custom domain, so two hosts serve the same content. A renamed subdomain's old label is freed at once, with no redirect.</p>
+      <div class="src">site-publish.service.ts · site-render-cache.service.ts</div></div></div>
+
+    <div class="gap"><span class="sev"><span class="pill p-warn">medium</span></span><div>
+      <h4>The origin is not locked to Cloudflare</h4>
+      <p>The ALB and the Amplify origins accept direct traffic, so a direct caller can forge <code>cf-connecting-ip</code> and <code>cf-ipcountry</code>. Analytics, rate limits and anything else keyed on visitor IP inherit that.</p>
+      <div class="src">visitor-ip.util.ts · PROPOSALS_QA_SIGNOFF.md:114</div></div></div>
+
+    <div class="gap"><span class="sev"><span class="pill p-warn">medium</span></span><div>
+      <h4>Link in Bio is broken on custom domains and on staging</h4>
+      <p>The bio lookup DTOs accept only a single DNS label and query only <code>Site.subdomain</code>, so a full custom host misses. <code>MARKETING_ORIGIN_URL</code> is not set in the staging deploy, so <code>/bio</code> on tenant hosts most likely 404s. That second point is inferred from the config, not checked live.</p>
+      <div class="src">public-link-in-bio-page.input.ts · link-in-bio.service.ts</div></div></div>
+
+    <div class="gap"><span class="sev"><span class="pill p-warn">medium</span></span><div>
+      <h4>Store cache key mismatch</h4>
+      <p>The store router writes <code>store-site:v4:&lt;host&gt;</code>, but publish invalidation deletes <code>store-site:&lt;host&gt;</code>. Store pages only refresh when the 30 s TTL runs out.</p>
+      <div class="src">public-store.router.ts · site-render-cache.service.ts:121-125</div></div></div>
+
+    <div class="gap"><span class="sev"><span class="pill p-warn">medium</span></span><div>
+      <h4>tenant-service probably runs with the wrong base domain</h4>
+      <p>The CloudFormation template sets no <code>SITE_BASE_DOMAIN</code> for tenant-service, so it falls back to <code>takeova.ai</code>. The editor's Domains tab may then show <code>&lt;sub&gt;.takeova.ai</code> on staging, and the "own domain" guard blocks all of <code>takeova.ai</code>. The second effect is stricter than needed but safe. Confirm against the live task definition.</p>
+      <div class="src">backend-infra.yaml tenant-service task · sites.service.ts domainFacts</div></div></div>
+
+    <div class="gap"><span class="sev"><span class="pill p-mute">low</span></span><div>
+      <h4>Poller robustness</h4>
+      <p>The poller has no distributed lock, so two tenant-service replicas would both poll and email twice. The Cloudflare axios calls have no explicit timeout.</p>
+      <div class="src">custom-domain-poller.service.ts · cloudflare-custom-hostname.client.ts</div></div></div>
+
+    <div class="gap"><span class="sev"><span class="pill p-mute">low</span></span><div>
+      <h4>Edge config is not in code</h4>
+      <p>Cloudflare DNS, the SaaS fallback origin, the SSL mode, the ACM certificate and the tenant ALB rule were all created by hand. A production stack on bare <code>takeova.ai</code> will have to be set up again from memory. <code>infra/DEPLOYMENT.md</code> also references files that no longer exist.</p></div></div>
+
+    <div class="gap"><span class="sev"><span class="pill p-mute">low</span></span><div>
+      <h4>Consistency and polish</h4>
+      <ul>
+        <li>Three reserved-name lists that disagree.</li>
+        <li>No subdomain availability check.</li>
+        <li>Status labels differ across the surfaces.</li>
+        <li>Removing a domain has no confirmation step.</li>
+        <li><code>staging.takeova.ai</code> is hardcoded in the dashboard and admin.</li>
+        <li><code>tierJoinUrl</code> ignores custom domains.</li>
+        <li><code>CORS_ALLOWED_WILDCARD_DOMAINS</code> is configured but never read.</li>
+        <li>The Cloudflare env vars are optional despite the "required" comment.</li>
+        <li>Cloudflare hostnames are not cleaned up when a tenant is deleted.</li>
+        <li>One domain per site, with no www/apex pairing.</li>
+      </ul></div></div>
+  </div>
+</section>
+
+<!-- 14 -->
+<section id="tests">
+  <h2><span class="n">14</span>Test coverage</h2>
+  <div class="tbl"><table>
+    <thead><tr><th>Area</th><th>Pinned by</th><th>Status</th></tr></thead>
+    <tbody>
+      <tr><td>Normalization, base-domain guard</td><td><code>custom-domain.util.spec.ts</code></td><td><span class="pill p-ok">unit</span></td></tr>
+      <tr><td>Classifier, including the 14-day boundary</td><td><code>custom-domain-classifier.spec.ts</code></td><td><span class="pill p-ok">unit</span></td></tr>
+      <tr><td>Cloudflare client (endpoint, body, token never logged)</td><td><code>cloudflare-custom-hostname.client.spec.ts</code></td><td><span class="pill p-ok">unit</span></td></tr>
+      <tr><td>Poller (transient failures, emails, batching)</td><td><code>custom-domain-poller.service.spec.ts</code> (9 tests)</td><td><span class="pill p-ok">unit</span></td></tr>
+      <tr><td>Set, remove and swap; rollback; P2002; no-op re-save</td><td><code>sites.service.spec.ts</code></td><td><span class="pill p-ok">unit</span></td></tr>
+      <tr><td>Host extraction, custom-host serving, portal and bio proxy</td><td><code>site-host.middleware.spec.ts</code></td><td><span class="pill p-ok">unit</span></td></tr>
+      <tr><td>Public host and return-URL rules</td><td><code>site-host.util.spec.ts</code>, <code>return-url.service.spec.ts</code></td><td><span class="pill p-ok">unit</span></td></tr>
+      <tr><td>Editor Domains tab (mocked backend)</td><td><code>e2e/tests/site-editor-mock.spec.ts</code></td><td><span class="pill p-info">e2e · mock</span></td></tr>
+      <tr><td>Dashboard and admin components</td><td><code>CustomDomainSetup</code>, <code>SubdomainSetup</code>, <code>DomainAndSitePanel</code>, <code>DomainsTab</code> tests</td><td><span class="pill p-ok">unit</span></td></tr>
+      <tr><td>Real domain through Cloudflare to the gateway</td><td>none</td><td><span class="pill p-bad">not tested</span></td></tr>
+      <tr><td>Old host stops serving after a rename (QA D6)</td><td>none</td><td><span class="pill p-bad">not tested</span></td></tr>
+      <tr><td>Custom-domain analytics (QA E-14)</td><td>none</td><td><span class="pill p-bad">not tested</span></td></tr>
+      <tr><td>Cap enforcement, FAILED re-save</td><td>none</td><td><span class="pill p-bad">no test</span></td></tr>
+    </tbody>
+  </table></div>
+  <p>One failing test predates this work: "DashboardViews custom-domain validation". The Courses and Memberships QA sign-off docs mention it.</p>
+</section>
+
+<footer class="doc">
+  Compiled from source in <code>takeova-backend</code> and <code>takeova-frontend</code> on 9 Oct 2026. Line references point to that state of the repos. Cloudflare dashboard settings and live AWS task definitions were not inspected, and the claims that depend on them are marked as inferred.
+</footer>
+</main>
+</div>
+
+<!--claude-mermaid-runtime-begin:3477-->
+<style>.mermaid-diagram{margin-block:4px}.mermaid-diagram svg{display:block;margin:0 auto;max-width:100%;height:auto}</style>
+<script src="/_runtime/mermaid-11.16.1.min.js"></script>
+<script>(function(){
+var CFG={"palettes":{"light":{"surface":"#f4efe4","text":"#42392e","line":"#8a7f6d","border":"#7a6c52","bg":"#fffdf8"},"dark":{"surface":"#262b34","text":"#f2f3f5","line":"#a8adb8","border":"#9aa4b8","bg":"#1f232b"}}};
+if(typeof mermaid==='undefined')return;
+var pres=Array.prototype.slice.call(document.querySelectorAll('pre.mermaid')).filter(function(p){if(p.hasAttribute('data-claude-mermaid-claimed'))return false;p.setAttribute('data-claude-mermaid-claimed','1');return true;});
+if(!pres.length)return;
+var mq=window.matchMedia?window.matchMedia('(prefers-color-scheme: dark)'):null;
+var root=document.documentElement;
+var items=pres.map(function(pre){
+var mount=document.createElement('div');mount.className='mermaid-diagram';
+return {pre:pre,mount:mount,src:pre.textContent||''};
+});
+var seq=0;
+var renderGen=0;
+var lastKey='';
+function pageBg(fallback){
+var els=[document.body,document.documentElement];
+for(var i=0;i<els.length;i++){
+var c=els[i]&&getComputedStyle(els[i]).backgroundColor;
+if(c&&c!=='transparent'&&c!=='rgba(0, 0, 0, 0)')return c;
+}
+return fallback;
+}
+function render(){
+var theme=root.getAttribute('data-theme');
+var dark=theme==='dark'||(!!(mq&&mq.matches)&&theme!=='light');
+var pal=dark?CFG.palettes.dark:CFG.palettes.light;
+var bg=pageBg(pal.bg);
+var key=(dark?'d':'l')+'|'+bg;
+if(key===lastKey)return;
+lastKey=key;
+var gen=++renderGen;
+var font=getComputedStyle(document.body).fontFamily||'sans-serif';
+var nat={useMaxWidth:false};
+mermaid.initialize({
+startOnLoad:false,securityLevel:'strict',theme:'base',
+flowchart:nat,sequence:nat,er:nat,state:nat,class:nat,pie:nat,
+gantt:nat,journey:nat,timeline:nat,gitGraph:nat,mindmap:nat,xyChart:nat,
+quadrantChart:nat,sankey:nat,c4:nat,requirement:nat,block:nat,
+packet:nat,kanban:nat,architecture:nat,radar:nat,
+themeVariables:{background:bg,mainBkg:pal.surface,primaryColor:pal.surface,
+primaryTextColor:pal.text,lineColor:pal.line,primaryBorderColor:pal.border,
+nodeBorder:pal.border,clusterBorder:pal.border,edgeLabelBackground:bg,
+clusterBkg:'rgba(127,127,127,0.07)',titleColor:pal.text,
+darkMode:dark,rowOdd:bg,rowEven:'rgba(127,127,127,0.07)',
+attributeBackgroundColorOdd:bg,attributeBackgroundColorEven:'rgba(127,127,127,0.07)',
+fontSize:'16px',fontFamily:font},
+themeCSS:'.node rect, .node circle, .node polygon, .node path, .cluster rect { stroke-width: 2px; }'
+});
+items.forEach(function(it){
+var id='claude-mermaid-'+seq++;
+mermaid.render(id,it.src).then(function(r){
+if(gen!==renderGen)return;
+var prev=it.pre.previousElementSibling;
+if(prev&&prev.className==='mermaid-diagram'&&prev!==it.mount)return;
+it.mount.innerHTML=r.svg;
+if(!it.mount.parentNode)it.pre.parentNode.insertBefore(it.mount,it.pre);
+it.pre.style.display='none';
+},function(){
+var scratch=document.getElementById(id);
+if(scratch)scratch.parentNode.removeChild(scratch);
+scratch=document.getElementById('d'+id);
+if(scratch)scratch.parentNode.removeChild(scratch);
+if(gen!==renderGen)return;
+if(it.mount.parentNode)it.mount.parentNode.removeChild(it.mount);
+it.pre.style.display='';
+});
+});
+}
+render();
+if(mq&&mq.addEventListener)mq.addEventListener('change',render);
+if(typeof MutationObserver!=='undefined')new MutationObserver(render).observe(root,{attributes:true,attributeFilter:['data-theme']});
+})();</script>
+<!--claude-mermaid-runtime-end-->
+
+</body></html>
