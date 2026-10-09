@@ -1,0 +1,45 @@
+{
+  "$comment": "Project-specific values. The ONLY file you edit per project. Skills, agents, commands and hooks read from here.",
+  "scope": "@acme",
+  "packageManager": "pnpm",
+  "apps": {
+    "web": {
+      "path": "apps/web",
+      "framework": "next",
+      "srcDir": "src"
+    }
+  },
+  "packages": {
+    "ui": "packages/ui",
+    "contracts": "packages/contracts",
+    "utils": "packages/utils"
+  },
+  "backend": {
+    "baseUrl": "http://localhost:4000",
+    "errorFormat": "rfc9457",
+    "repo": "separate",
+    "authCookies": {
+      "access": "access_token",
+      "refresh": "refresh_token"
+    },
+    "authPaths": {
+      "login": "/auth/login",
+      "refresh": "/auth/refresh",
+      "logout": "/auth/logout",
+      "me": "/auth/me"
+    }
+  },
+  "toggles": {
+    "i18n": false,
+    "pwa": false,
+    "realtime": "none",
+    "richText": "none",
+    "featureFlags": "env"
+  },
+  "pinnedVersionsNote": "Versions are read from package.json at session start. Never assume a version; verify version-specific APIs against that version's docs.",
+  "contracts": {
+    "sourceOfTruth": "frontend-monorepo",
+    "consumption": "registry",
+    "registry": "private-npm"
+  }
+}

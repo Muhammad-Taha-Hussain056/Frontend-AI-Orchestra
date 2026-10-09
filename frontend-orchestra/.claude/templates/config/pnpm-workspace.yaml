@@ -1,0 +1,5 @@
+packages:
+  - "apps/*"
+  - "packages/*"
+# catalog: pin shared versions once. Fill with the versions chosen at scaffold time (never copy placeholders).
+catalog: {}
